@@ -1,0 +1,44 @@
+---
+
+# === Переменные для бэкенда ===
+# Пакет Java
+java_package: openjdk-16-jdk
+# Юзер и группа сервиса
+service_user_backend: backend
+systemd_service_name_backend: sausage-store-back.service
+
+NEXUS_REPO_BACKEND_NAME: "01-std-ext-017-42-backend/"
+# Местонахождение JAR-файла
+ARTIFACT_DESTINATION_DIR_BACKEND: "/opt/sausage-store/bin/"
+ARTIFACT_FILENAME_BACKEND: "sausage-store-{{ VERSION }}.jar"
+ARTIFACT_DOWNLOAD_URL_BACKEND: "{{ NEXUS_REPO_URL }}repository/{{ NEXUS_REPO_BACKEND_NAME }}/com/yandex/practicum/devops/sausage-store/{{ VERSION }}/sausage-store-{{ VERSION }}.jar"
+
+# Данные для Nexus
+NEXUS_REPO_USER: "std-ext-017-42"
+NEXUS_REPO_PASS: "*****"
+NEXUS_REPO_URL: "https://nexus.praktikum-services.tech/"
+
+VERSION: "1.0.2028808"
+
+# === Переменные для фронтенда ===
+# Настройки Nexus для фронтенда
+NEXUS_REPO_FRONTEND_NAME: "01-std-ext-017-42-frontend/"                           
+# Название репозитория фронтенда
+
+# Локализация артефактов и рабочие директории
+ARTIFACT_PATH_FRONTEND: "/var/www-data/dist/"                                
+# Рабочая директория для фронтенда
+DOWNLOAD_DIRECTORY_FRONTEND: "/var/www-data/"              
+# Временная директория для скачивания архивов
+SAUSAGE_STORE_ARTIFACT_NAME_FRONTEND: "sausage-store"                       
+# Имя фронтенд-артефакта
+SAUSAGE_STORE_ARCHIVE_NAME_FRONTEND: "sausage-store-{{ VERSION }}.tar.gz"                 
+# Архивный файл фронтенда
+# Система и сервисы
+SYSTEMD_SERVICE_NAME_FRONTEND: "nginx"                                        
+# Имя службы Nginx
+# Путь к шаблону и конечный путь для конфига Nginx
+NGINX_CONFIG_TEMPLATE: "nginx.conf"                              
+# Шаблон конфигурации Nginx
+NGINX_CONFIG_DESTINATION: "/etc/nginx/nginx.conf"        
+# Куда разместить файл конфигурации Nginx

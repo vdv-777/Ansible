@@ -1,0 +1,13 @@
+[Unit]
+Description=Sausage Store Backend Service
+After=network.target
+
+[Service]
+User={{ service_user_backend }}
+Group={{ service_user_backend }}
+WorkingDirectory={{ ARTIFACT_DESTINATION_DIR_BACKEND }}
+ExecStart=/usr/bin/java -jar {{ ARTIFACT_DESTINATION_DIR_BACKEND }}{{ ARTIFACT_FILENAME_BACKEND }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

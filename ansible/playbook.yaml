@@ -1,0 +1,8 @@
+---
+- name: Backend and Frontend deployment and service setup.
+  hosts: created_vm
+  remote_user: ansible
+  become: true
+  roles:
+    - backend
+    - frontend

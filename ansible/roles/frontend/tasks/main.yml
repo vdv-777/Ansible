@@ -1,0 +1,67 @@
+---
+- name: Create www-data user if not exists
+  user:
+    name: www-data
+    system: yes
+    create_home: no
+    state: present
+
+- name: Create download directory
+  file:
+    path: "{{ DOWNLOAD_DIRECTORY_FRONTEND }}"
+    state: directory
+    mode: '0755'
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Stopping NGINX service initially
+  systemd:
+    name: "{{ SYSTEMD_SERVICE_NAME_FRONTEND }}"
+    state: stopped
+
+- name: Replace default Nginx configuration
+  template:
+    src: "{{ NGINX_CONFIG_TEMPLATE }}"
+    dest: "{{ NGINX_CONFIG_DESTINATION }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Remove old artifacts
+  file:
+    path: "{{ ARTIFACT_PATH_FRONTEND }}"
+    state: directory
+    recurse: yes
+
+- name: Download frontend artifact from Nexus
+  get_url:
+    url: "{{ NEXUS_REPO_URL }}repository/{{ NEXUS_REPO_FRONTEND_NAME }}/{{ VERSION }}/{{ SAUSAGE_STORE_ARTIFACT_NAME_FRONTEND }}-{{ VERSION }}.tar.gz"
+    dest: "{{ DOWNLOAD_DIRECTORY_FRONTEND }}/{{ SAUSAGE_STORE_ARCHIVE_NAME_FRONTEND }}"
+    username: "{{ NEXUS_REPO_USER }}"
+    password: "{{ NEXUS_REPO_PASS }}"
+    force_basic_auth: yes
+
+- name: Extract downloaded archive
+  unarchive:
+    src: "{{ DOWNLOAD_DIRECTORY_FRONTEND }}{{ SAUSAGE_STORE_ARCHIVE_NAME_FRONTEND }}"
+    dest: "{{ ARTIFACT_PATH_FRONTEND }}"
+#    extra_opts: "--strip-components=1"
+    remote_src: yes
+
+- name: Reload systemd daemons
+  systemd:
+    daemon_reload: yes
+
+- name: Starting NGINX service
+  systemd:
+    name: "{{ SYSTEMD_SERVICE_NAME_FRONTEND }}"
+    state: started
+
+- name: Display status of NGINX service
+  shell: "sudo systemctl status {{ SYSTEMD_SERVICE_NAME_FRONTEND }}"
+  args:
+    executable: /bin/bash

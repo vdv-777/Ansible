@@ -1,0 +1,47 @@
+---
+- name: Install OpenJDK package
+  apt:
+    name: "{{ java_package }}"
+    update_cache: yes
+    state: present
+
+- name: Create a service account
+  user:
+    name: "{{ service_user_backend }}"
+    home: /home/{{ service_user_backend }}
+    shell: /bin/sh
+    system: yes
+
+- name: Ensure destination directory exists
+  file:
+    path: "{{ ARTIFACT_DESTINATION_DIR_BACKEND }}"
+    state: directory
+    owner: "{{ service_user_backend }}"
+    mode: '0755'
+
+- name: Download artifact from Nexus repository
+  get_url:
+    url: "{{ ARTIFACT_DOWNLOAD_URL_BACKEND }}"
+    dest: "{{ ARTIFACT_DESTINATION_DIR_BACKEND }}{{ ARTIFACT_FILENAME_BACKEND }}"
+    owner: "{{ service_user_backend }}"
+    mode: '0644'
+    force_basic_auth: yes
+    url_username: "{{ NEXUS_REPO_USER }}"
+    url_password: "{{ NEXUS_REPO_PASS }}"
+
+- name: Add systemd unit file
+  template:
+    src: "templates/sausage-store-back.service"
+    dest: "/etc/systemd/system/{{ systemd_service_name_backend }}"
+    owner: "{{ service_user_backend }}"
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Start and enable the service
+  systemd:
+    name: "{{ systemd_service_name_backend }}"
+    enabled: yes
+    state: started

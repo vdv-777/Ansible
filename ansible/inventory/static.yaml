@@ -1,0 +1,9 @@
+---
+all:
+  children:
+    created_vm:
+      hosts:
+        "{{ lookup('file', '~/terraform/ip-address.txt').strip() }}":
+          ansible_user: ansible
+          ansible_become: true
+          ansible_python_interpreter: /usr/bin/python3
